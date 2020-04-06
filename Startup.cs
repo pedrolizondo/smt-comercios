@@ -20,12 +20,22 @@ namespace SMT.Comercios.API
         {
             Configuration = configuration;
         }
-
+        readonly string VerificationApiPolicy = "VerificationApiPolicy";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(VerificationApiPolicy,
+                    builder =>
+                    {
+                        builder.WithOrigins("*")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
             services.AddControllers();
             services.AddDbContext<SmtApiDbContext>();
         }
@@ -38,9 +48,10 @@ namespace SMT.Comercios.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(VerificationApiPolicy);
 
             app.UseAuthorization();
 
